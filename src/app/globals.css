@@ -50,6 +50,18 @@ button{cursor:pointer;background:none;border:none}
 /* ---------- shell ---------- */
 .app{display:grid;grid-template-columns:216px 1fr;height:100vh;overflow:hidden}
 
+/* 스크롤 동작은 유지하되 ERP와 키오스크에서 트랙은 노출하지 않는다. */
+.app,.app *,.kiosk-page,.kiosk-page *{
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.app::-webkit-scrollbar,.app *::-webkit-scrollbar,
+.kiosk-page::-webkit-scrollbar,.kiosk-page *::-webkit-scrollbar{
+  display:none;
+  width:0;
+  height:0;
+}
+
 .side{background:var(--ink);color:#EFEAE2;display:flex;flex-direction:column;overflow:hidden}
 .brand{padding:18px 18px 0}
 .brand-mark{
