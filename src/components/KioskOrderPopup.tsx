@@ -31,13 +31,11 @@ export default function KioskOrderPopup({
   const [orders, setOrders] = useState<PopupOrder[]>([]);
   const names = useRef(new Map<string, string>());
   const seen = useRef(new Set<string>());
-  const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const supabase = createClient();
-    const orderTimers = timers.current;
     if (storeId && storeName) names.current.set(storeId, storeName);
 
     if (!storeId) {
@@ -64,12 +62,6 @@ export default function KioskOrderPopup({
             ...current,
           ].slice(0, 3));
 
-          const timer = setTimeout(() => {
-            setOrders((current) => current.filter((item) => item.id !== order.id));
-            orderTimers.delete(order.id);
-          }, 9_000);
-          orderTimers.set(order.id, timer);
-
           if (refreshTimer.current) clearTimeout(refreshTimer.current);
           refreshTimer.current = setTimeout(() => router.refresh(), 1_200);
         },
@@ -78,16 +70,11 @@ export default function KioskOrderPopup({
 
     return () => {
       if (refreshTimer.current) clearTimeout(refreshTimer.current);
-      orderTimers.forEach(clearTimeout);
-      orderTimers.clear();
       supabase.removeChannel(channel);
     };
   }, [router, storeId, storeName]);
 
   const dismiss = (id: string) => {
-    const timer = timers.current.get(id);
-    if (timer) clearTimeout(timer);
-    timers.current.delete(id);
     setOrders((current) => current.filter((item) => item.id !== id));
   };
 
@@ -105,7 +92,7 @@ export default function KioskOrderPopup({
               {order.order_type === 'takeout' ? '포장' : '매장'} · {n0(order.item_count)}개 ·{' '}
               <b>{n0(order.total)}원</b>
             </div>
-            <Link className="kop-link" href="/kiosk-link">주문 확인하기 →</Link>
+            <Link className="kop-link" href="/kiosk-orders">주문 확인하기 →</Link>
           </div>
           <button className="kop-close" type="button" onClick={() => dismiss(order.id)} aria-label="알림 닫기">
             ×

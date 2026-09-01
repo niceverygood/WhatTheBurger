@@ -290,7 +290,7 @@ export default async function DashboardPage() {
           <Card
             title="최근 키오스크 주문"
             sub="결제 완료 순"
-            aside={<Link className="btn btn-sm" href="/kiosk-link">연동 화면</Link>}
+            aside={<Link className="btn btn-sm" href="/kiosk-orders">전체 주문</Link>}
           >
             <div className="tbl-wrap">
               <table>

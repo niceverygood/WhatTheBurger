@@ -24,7 +24,8 @@ export const NAV: NavGroup[] = [
   {
     group: '키오스크',
     items: [
-      { href: '/kiosk-link', ko: '키오스크 연동', icon: 'M4 2h10v11H4zM7 15h4M6.5 5.5h5M6.5 8h3' },
+      { href: '/kiosk-orders', ko: '주문 내역', icon: 'M3 3h12v12H3zM6 6h6M6 9h6M6 12h4' },
+      { href: '/kiosk-link', ko: '단말 · 연동', icon: 'M4 2h10v11H4zM7 15h4M6.5 5.5h5M6.5 8h3' },
     ],
   },
   {

@@ -316,7 +316,7 @@ export default function KioskLinkClient({
         </Card>
       </div>
 
-      <div style={{ marginTop: 14 }}>
+      <div id="recent-kiosk-orders" style={{ marginTop: 14, scrollMarginTop: 18 }}>
         <Card title="최근 키오스크 주문" sub="최근 20건">
           <div className="tbl-wrap">
             <table>
