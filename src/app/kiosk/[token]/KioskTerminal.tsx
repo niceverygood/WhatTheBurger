@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { n0 } from '@/lib/format';
 
@@ -33,6 +34,12 @@ interface CheckoutErr {
 }
 
 const CATS = ['버거', '세트', '사이드', '음료'];
+const CATEGORY_IMAGE: Record<string, string> = {
+  버거: '/images/menu/signature-burger-v2.png',
+  세트: '/images/menu/burger-set-v2.png',
+  사이드: '/images/menu/crispy-fries-v2.png',
+  음료: '/images/menu/chilled-cola-v2.png',
+};
 
 export default function KioskTerminal({
   token, initial,
@@ -206,7 +213,16 @@ export default function KioskTerminal({
                   disabled={left <= 0}
                   onClick={() => add(m)}
                 >
-                  <span className="em">{m.emoji}</span>
+                  <span className="kio-photo">
+                    <Image
+                      src={CATEGORY_IMAGE[m.category] ?? CATEGORY_IMAGE.버거}
+                      alt=""
+                      fill
+                      sizes="(max-width: 820px) 42vw, (max-width: 1180px) 25vw, 220px"
+                      priority={m.sort < 4}
+                    />
+                    <span className="kio-photo-badge" aria-hidden="true">{m.emoji}</span>
+                  </span>
                   <span className="nm">{m.name}</span>
                   <span className="pr">{n0(m.price)}원</span>
                   {left <= 0 ? (

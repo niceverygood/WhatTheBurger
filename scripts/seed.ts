@@ -15,25 +15,10 @@ import {
 config({ path: '.env.local' });
 config({ path: '.env' });
 
-const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const HQ_EMAIL = process.env.SEED_HQ_EMAIL ?? 'admin@whattheburger.co.kr';
-const HQ_PASSWORD = process.env.SEED_HQ_PASSWORD ?? '';
-
-if (!URL || !KEY) {
-  console.error('✖ NEXT_PUBLIC_SUPABASE_URL 과 SUPABASE_SERVICE_ROLE_KEY 를 .env.local 에 설정해 주세요.');
-  process.exit(1);
-}
-if (HQ_PASSWORD.length < 8) {
-  console.error('✖ SEED_HQ_PASSWORD 를 8자 이상으로 설정해 주세요.');
-  process.exit(1);
-}
-
-const db: SupabaseClient = createClient(URL, KEY, {
-  auth: { autoRefreshToken: false, persistSession: false },
-});
-
-const RESET = process.argv.includes('--reset');
+let db: SupabaseClient;
+let HQ_EMAIL = '';
+let HQ_PASSWORD = '';
+let RESET = false;
 
 /* ---------------------------------------------------------------- 결정적 난수 */
 let _s = 20260812;
@@ -52,8 +37,7 @@ const dayAdd = (d: Date, n: number) => new Date(d.getTime() + n * DAY);
 
 function ok<T>(label: string, res: { error: { message: string } | null; data?: T }): T {
   if (res.error) {
-    console.error(`✖ ${label}: ${res.error.message}`);
-    process.exit(1);
+    throw new Error(`${label}: ${res.error.message}`);
   }
   return res.data as T;
 }
@@ -64,8 +48,7 @@ async function insertChunked<T extends object>(table: string, rows: T[], size = 
     const chunk = rows.slice(i, i + size);
     const { error } = await db.from(table).insert(chunk);
     if (error) {
-      console.error(`✖ ${table} 삽입 실패 (${i}~${i + chunk.length}): ${error.message}`);
-      process.exit(1);
+      throw new Error(`${table} 삽입 실패 (${i}~${i + chunk.length}): ${error.message}`);
     }
   }
 }
@@ -449,7 +432,31 @@ async function main() {
   console.log('────────────────────────────────────────────────');
 }
 
-main().catch((e) => {
-  console.error('✖ 시드 중 오류:', e);
-  process.exit(1);
-});
+/** CLI와 일회성 서버 부트스트랩에서 같은 시드 로직을 안전하게 재사용한다. */
+export async function seedDatabase(options: { reset?: boolean } = {}) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  HQ_EMAIL = process.env.SEED_HQ_EMAIL ?? 'admin@whattheburger.co.kr';
+  HQ_PASSWORD = process.env.SEED_HQ_PASSWORD ?? '';
+  RESET = options.reset ?? false;
+
+  if (!url || !key) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL 과 SUPABASE_SERVICE_ROLE_KEY 를 설정해 주세요.');
+  }
+  if (HQ_PASSWORD.length < 8) {
+    throw new Error('SEED_HQ_PASSWORD 를 8자 이상으로 설정해 주세요.');
+  }
+
+  db = createClient(url, key, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
+  await main();
+}
+
+if (process.argv[1]?.endsWith('scripts/seed.ts')) {
+  seedDatabase({ reset: process.argv.includes('--reset') }).catch((e) => {
+    console.error('✖ 시드 중 오류:', e);
+    process.exitCode = 1;
+  });
+}

@@ -6,7 +6,7 @@ import Topbar from '@/components/Topbar';
 import { Card, Empty, Kpi, Meter, Pill, StageBadge, type State } from '@/components/ui';
 import { AreaChart, BarChart, type Point } from '@/components/charts';
 import LiveTicker from '@/components/LiveTicker';
-import { md, n0, seoulToday, weekdayOf, won, wonC } from '@/lib/format';
+import { dateTime, md, n0, seoulToday, weekdayOf, won, wonC } from '@/lib/format';
 import type { OrderStage } from '@/lib/types';
 
 export const metadata: Metadata = { title: '대시보드 · 왓더버거 ERP' };
@@ -31,6 +31,12 @@ interface RecentOrder {
   store: { code: string; name: string } | null;
 }
 
+interface RecentKioskOrder {
+  id: string; order_no: string; total: number; item_count: number;
+  paid_at: string; order_type: string;
+  store: { code: string; name: string } | null;
+}
+
 const stockState = (ratio: number | null): State =>
   ratio == null ? 'idle' : ratio <= 0.5 ? 'crit' : ratio <= 1 ? 'warn' : 'ok';
 
@@ -39,7 +45,15 @@ export default async function DashboardPage() {
   const storeId = scopeStoreId(session);
   const supabase = await createClient();
 
-  const [summaryRes, seriesRes, catRes, lowRes, recentRes] = await Promise.all([
+  let kioskOrdersQuery = supabase
+    .from('kiosk_orders')
+    .select('id, order_no, total, item_count, paid_at, order_type, store:stores(code, name)')
+    .eq('status', 'paid')
+    .order('paid_at', { ascending: false })
+    .limit(8);
+  if (storeId) kioskOrdersQuery = kioskOrdersQuery.eq('store_id', storeId);
+
+  const [summaryRes, seriesRes, catRes, lowRes, recentRes, kioskOrdersRes] = await Promise.all([
     supabase.rpc('dashboard_summary', { p_store: storeId }),
     supabase.rpc('daily_order_series', { p_store: storeId, p_days: 14 }),
     supabase.rpc('category_totals', { p_store: storeId }),
@@ -50,6 +64,7 @@ export default async function DashboardPage() {
       .not('stage', 'in', '(done,canceled)')
       .order('ordered_ts', { ascending: false })
       .limit(8),
+    kioskOrdersQuery,
   ]);
 
   const s = (summaryRes.data ?? {}) as Partial<Summary>;
@@ -76,6 +91,7 @@ export default async function DashboardPage() {
   const low = (lowRes.data ?? []) as LowRow[];
   const crit = low.filter((r) => stockState(r.ratio) === 'crit');
   const recent = (recentRes.data ?? []) as unknown as RecentOrder[];
+  const kioskOrders = (kioskOrdersRes.data ?? []) as unknown as RecentKioskOrder[];
 
   const delta = today.amount - yday.amount;
   const todayIso = seoulToday();
@@ -268,8 +284,49 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
-        <div style={{ marginTop: 14 }}>
+        <div className="grid dashboard-live-grid" style={{ marginTop: 14, alignItems: 'start' }}>
           <LiveTicker storeId={storeId} isHQ={session.isHQ} />
+
+          <Card
+            title="최근 키오스크 주문"
+            sub="결제 완료 순"
+            aside={<Link className="btn btn-sm" href="/kiosk-link">연동 화면</Link>}
+          >
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>주문번호</th>
+                    {session.isHQ && <th>지점</th>}
+                    <th>결제 시각</th>
+                    <th style={{ textAlign: 'right' }}>금액</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {kioskOrders.map((o) => (
+                    <tr key={o.id}>
+                      <td>
+                        <span className="code">{o.order_no}</span>
+                        <div style={{ fontSize: 10.5, color: 'var(--ink-4)', marginTop: 2 }}>
+                          {o.order_type === 'takeout' ? '포장' : '매장'} · {n0(o.item_count)}개
+                        </div>
+                      </td>
+                      {session.isHQ && <td style={{ whiteSpace: 'nowrap' }}>{o.store?.name ?? '—'}</td>}
+                      <td className="num t-mute" style={{ whiteSpace: 'nowrap' }}>{dateTime(o.paid_at)}</td>
+                      <td className="num" style={{ textAlign: 'right', fontWeight: 700 }}>{won(o.total)}</td>
+                    </tr>
+                  ))}
+                  {kioskOrders.length === 0 && (
+                    <tr>
+                      <td colSpan={session.isHQ ? 4 : 3}>
+                        <Empty>키오스크에서 결제하면 주문이 이곳에 표시됩니다.</Empty>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         </div>
       </div>
     </>
