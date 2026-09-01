@@ -39,6 +39,49 @@ export default function KioskOrderPopup({
 
   useEffect(() => {
     const supabase = createClient();
+    let active = true;
+    let checking = false;
+    let initialized = false;
+
+    const checkLatestOrders = async () => {
+      if (checking) return;
+      checking = true;
+
+      let query = supabase
+        .from('kiosk_orders')
+        .select('id, order_no, store_id, total, item_count, order_type, paid_at, store:stores(name)')
+        .order('paid_at', { ascending: false })
+        .limit(5);
+      if (storeId) query = query.eq('store_id', storeId);
+
+      const { data } = await query;
+      checking = false;
+      if (!active || !data) return;
+
+      const latest = data as unknown as KioskOrderWithStore[];
+      if (!initialized) {
+        latest.forEach((order) => seen.current.add(order.id));
+        initialized = true;
+        return;
+      }
+
+      const fresh = latest.filter((order) => !seen.current.has(order.id));
+      if (fresh.length === 0) return;
+      fresh.forEach((order) => seen.current.add(order.id));
+
+      setOrders((current) => [
+        ...fresh.map((order) => ({
+          ...order,
+          store_name: order.store?.name ?? storeName ?? '키오스크',
+        })),
+        ...current,
+      ].slice(0, 3));
+
+      if (refreshTimer.current) clearTimeout(refreshTimer.current);
+      refreshTimer.current = setTimeout(() => router.refresh(), 1_200);
+    };
+
+    void checkLatestOrders();
 
     const filter = storeId ? `store_id=eq.${storeId}` : undefined;
     const channel = supabase
@@ -46,34 +89,14 @@ export default function KioskOrderPopup({
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'kiosk_orders', ...(filter ? { filter } : {}) },
-        async (payload) => {
-          const event = payload.new as Partial<KioskOrderRow>;
-          if (!event.id || seen.current.has(event.id)) return;
-
-          // Realtime은 새 주문 신호로만 사용하고, 표시 데이터는 RLS를 거쳐 다시 읽는다.
-          // 네트워크 재연결 직후 부분 payload가 오더라도 0원 알림이 뜨지 않게 한다.
-          const { data } = await supabase
-            .from('kiosk_orders')
-            .select('id, order_no, store_id, total, item_count, order_type, paid_at, store:stores(name)')
-            .eq('id', event.id)
-            .maybeSingle();
-          if (!data) return;
-
-          const order = data as unknown as KioskOrderWithStore;
-          seen.current.add(order.id);
-
-          setOrders((current) => [
-            { ...order, store_name: order.store?.name ?? storeName ?? '키오스크' },
-            ...current,
-          ].slice(0, 3));
-
-          if (refreshTimer.current) clearTimeout(refreshTimer.current);
-          refreshTimer.current = setTimeout(() => router.refresh(), 1_200);
-        },
+        () => { void checkLatestOrders(); },
       )
       .subscribe();
+    const poll = setInterval(() => { void checkLatestOrders(); }, 3_000);
 
     return () => {
+      active = false;
+      clearInterval(poll);
       if (refreshTimer.current) clearTimeout(refreshTimer.current);
       supabase.removeChannel(channel);
     };
