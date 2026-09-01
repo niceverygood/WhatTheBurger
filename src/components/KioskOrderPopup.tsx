@@ -20,6 +20,10 @@ interface PopupOrder extends KioskOrderRow {
   store_name: string;
 }
 
+interface KioskOrderWithStore extends KioskOrderRow {
+  store: { name: string } | null;
+}
+
 /** ERP 어느 화면에서든 새 키오스크 결제를 알려 주는 전역 Realtime 팝업. */
 export default function KioskOrderPopup({
   storeId,
@@ -29,22 +33,12 @@ export default function KioskOrderPopup({
   storeName: string | null;
 }) {
   const [orders, setOrders] = useState<PopupOrder[]>([]);
-  const names = useRef(new Map<string, string>());
   const seen = useRef(new Set<string>());
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const supabase = createClient();
-    if (storeId && storeName) names.current.set(storeId, storeName);
-
-    if (!storeId) {
-      supabase.from('stores').select('id, name').then(({ data }) => {
-        (data ?? []).forEach((store: { id: string; name: string }) => {
-          names.current.set(store.id, store.name);
-        });
-      });
-    }
 
     const filter = storeId ? `store_id=eq.${storeId}` : undefined;
     const channel = supabase
@@ -52,13 +46,24 @@ export default function KioskOrderPopup({
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'kiosk_orders', ...(filter ? { filter } : {}) },
-        (payload) => {
-          const order = payload.new as KioskOrderRow;
-          if (seen.current.has(order.id)) return;
+        async (payload) => {
+          const event = payload.new as Partial<KioskOrderRow>;
+          if (!event.id || seen.current.has(event.id)) return;
+
+          // Realtime은 새 주문 신호로만 사용하고, 표시 데이터는 RLS를 거쳐 다시 읽는다.
+          // 네트워크 재연결 직후 부분 payload가 오더라도 0원 알림이 뜨지 않게 한다.
+          const { data } = await supabase
+            .from('kiosk_orders')
+            .select('id, order_no, store_id, total, item_count, order_type, paid_at, store:stores(name)')
+            .eq('id', event.id)
+            .maybeSingle();
+          if (!data) return;
+
+          const order = data as unknown as KioskOrderWithStore;
           seen.current.add(order.id);
 
           setOrders((current) => [
-            { ...order, store_name: names.current.get(order.store_id) ?? storeName ?? '키오스크' },
+            { ...order, store_name: order.store?.name ?? storeName ?? '키오스크' },
             ...current,
           ].slice(0, 3));
 
