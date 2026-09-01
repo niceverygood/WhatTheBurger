@@ -2,6 +2,7 @@ import { requireSession } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import Sidebar, { type NavBadges } from '@/components/Sidebar';
 import { ToastProvider } from '@/components/Toast';
+import KioskOrderPopup from '@/components/KioskOrderPopup';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,6 +55,10 @@ export default async function ErpLayout({ children }: { children: React.ReactNod
 
   return (
     <ToastProvider>
+      <KioskOrderPopup
+        storeId={session.isHQ ? null : session.profile.store_id}
+        storeName={session.store?.name ?? null}
+      />
       <div className="app">
         <Sidebar
           isHQ={session.isHQ}
