@@ -54,6 +54,7 @@ export default function KioskTerminal({
   const [tab, setTab] = useState(CATS[0]);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [orderType, setOrderType] = useState<'dine_in' | 'takeout'>('dine_in');
+  const [mobileCartOpen, setMobileCartOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<CheckoutOk | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -82,6 +83,15 @@ export default function KioskTerminal({
   }, [refresh]);
 
   useEffect(() => () => { if (doneTimer.current) clearTimeout(doneTimer.current); }, []);
+
+  useEffect(() => {
+    if (!mobileCartOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileCartOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [mobileCartOpen]);
 
   const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
   const total = Object.entries(cart).reduce(
@@ -149,6 +159,7 @@ export default function KioskTerminal({
 
       setDone(body);
       setCart({});
+      setMobileCartOpen(false);
       await refresh();
       doneTimer.current = setTimeout(() => setDone(null), 5000);
     } catch {
@@ -166,28 +177,32 @@ export default function KioskTerminal({
       <div className="kio kio-wrap">
         <div className="kio-top">
           <span className="lg">WHAT THE BURGER</span>
-          <span style={{ fontSize: 11.5, opacity: 0.85 }}>KIOSK 01</span>
+          <span className="kio-terminal">KIOSK 01</span>
           <span className="st">
             {initial.store.name} · {initial.store.code}
           </span>
         </div>
 
         <div className="kio-tabs">
-          {CATS.map((c) => (
-            <button
-              key={c}
-              type="button"
-              className={`kio-tab ${c === tab ? 'on' : ''}`}
-              onClick={() => setTab(c)}
-            >
-              {c}
-            </button>
-          ))}
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 6, padding: '0 6px 0 0', alignItems: 'center' }}>
+          <div className="kio-category-tabs" aria-label="메뉴 분류">
+            {CATS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                className={`kio-tab ${c === tab ? 'on' : ''}`}
+                onClick={() => setTab(c)}
+                aria-pressed={c === tab}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+          <div className="kio-order-tabs" aria-label="주문 방식">
             <button
               type="button"
               className={`kio-tab ${orderType === 'dine_in' ? 'on' : ''}`}
               onClick={() => setOrderType('dine_in')}
+              aria-pressed={orderType === 'dine_in'}
             >
               매장
             </button>
@@ -195,6 +210,7 @@ export default function KioskTerminal({
               type="button"
               className={`kio-tab ${orderType === 'takeout' ? 'on' : ''}`}
               onClick={() => setOrderType('takeout')}
+              aria-pressed={orderType === 'takeout'}
             >
               포장
             </button>
@@ -218,7 +234,7 @@ export default function KioskTerminal({
                       src={CATEGORY_IMAGE[m.category] ?? CATEGORY_IMAGE.버거}
                       alt=""
                       fill
-                      sizes="(max-width: 820px) 42vw, (max-width: 1180px) 25vw, 220px"
+                      sizes="(max-width: 560px) 46vw, (max-width: 900px) 31vw, (max-width: 1180px) 25vw, 220px"
                       priority={m.sort < 4}
                     />
                     <span className="kio-photo-badge" aria-hidden="true">{m.emoji}</span>
@@ -240,8 +256,27 @@ export default function KioskTerminal({
             )}
           </div>
 
-          <div className="kio-cart">
-            <h4>주문 내역 · {orderType === 'dine_in' ? '매장 식사' : '포장'}</h4>
+          {mobileCartOpen && (
+            <button
+              type="button"
+              className="kio-cart-scrim"
+              aria-label="주문서 닫기"
+              onClick={() => setMobileCartOpen(false)}
+            />
+          )}
+
+          <div className={`kio-cart ${mobileCartOpen ? 'open' : ''}`} aria-label="주문 내역">
+            <div className="kio-cart-head">
+              <h4>주문 내역 · {orderType === 'dine_in' ? '매장 식사' : '포장'}</h4>
+              <button
+                type="button"
+                className="kio-cart-close"
+                aria-label="주문서 닫기"
+                onClick={() => setMobileCartOpen(false)}
+              >
+                ×
+              </button>
+            </div>
 
             <div className="kio-lines">
               {lines.length === 0 ? (
@@ -313,6 +348,23 @@ export default function KioskTerminal({
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="kio-mobile-summary">
+          <button
+            type="button"
+            className="kio-mobile-cart-button"
+            onClick={() => setMobileCartOpen(true)}
+            aria-expanded={mobileCartOpen}
+          >
+            <span className="kio-mobile-count">
+              <b>{cartCount}개</b>
+              <span>{n0(total)}원</span>
+            </span>
+            <span className="kio-mobile-action">
+              {cartCount > 0 ? '주문 확인' : '메뉴를 담아주세요'} <b aria-hidden="true">→</b>
+            </span>
+          </button>
         </div>
 
         {done && (
