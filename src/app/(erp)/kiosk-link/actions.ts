@@ -22,6 +22,7 @@ export async function rotateToken(storeId: string): Promise<KioskActionResult> {
   }
 
   revalidatePath('/kiosk-link');
+  revalidatePath('/store-dashboard');
   return { ok: true, message: '키오스크 링크를 재발급했습니다. 기존 링크는 즉시 사용할 수 없습니다.', token: data as string };
 }
 
@@ -37,5 +38,6 @@ export async function setKioskEnabled(storeId: string, enabled: boolean): Promis
   if (error) return { ok: false, error: `변경에 실패했습니다. (${error.message})` };
 
   revalidatePath('/kiosk-link');
+  revalidatePath('/store-dashboard');
   return { ok: true, message: enabled ? '키오스크를 사용 상태로 전환했습니다.' : '키오스크를 일시 중지했습니다.' };
 }

@@ -41,6 +41,7 @@ export async function adjustStock(
   revalidatePath('/inventory');
   revalidatePath('/kiosk-link');
   revalidatePath('/dashboard');
+  revalidatePath('/store-dashboard');
   return { ok: true, message: '재고를 조정했습니다.' };
 }
 
@@ -65,5 +66,6 @@ export async function setSafetyStock(
   if (error) return { ok: false, error: `변경에 실패했습니다. (${error.message})` };
 
   revalidatePath('/inventory');
+  revalidatePath('/store-dashboard');
   return { ok: true, message: '안전재고 기준을 변경했습니다.' };
 }

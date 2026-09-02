@@ -59,7 +59,7 @@ export default async function ErpLayout({ children }: { children: React.ReactNod
         storeId={session.isHQ ? null : session.profile.store_id}
         storeName={session.store?.name ?? null}
       />
-      <div className="app">
+      <div className={`app ${session.isHQ ? 'app-hq' : 'app-store'}`}>
         <Sidebar
           isHQ={session.isHQ}
           badges={badges}

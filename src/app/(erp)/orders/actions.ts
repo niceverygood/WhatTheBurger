@@ -50,6 +50,7 @@ export async function advanceStage(
   revalidatePath('/shipping');
   revalidatePath('/dashboard');
   revalidatePath('/inventory');
+  revalidatePath('/store-dashboard');
   return { ok: true, message: '발주 단계를 변경했습니다.' };
 }
 
@@ -77,6 +78,7 @@ export async function advanceMany(
   revalidatePath('/orders');
   revalidatePath('/shipping');
   revalidatePath('/dashboard');
+  revalidatePath('/store-dashboard');
 
   if (done === 0) return { ok: false, error: `처리하지 못했습니다. (${failures[0] ?? '알 수 없는 오류'})` };
   return {
@@ -123,5 +125,6 @@ export async function submitOrder(
   const res = data as { order_no: string; id: string };
   revalidatePath('/orders');
   revalidatePath('/dashboard');
+  revalidatePath('/store-dashboard');
   return { ok: true, message: `발주 ${res.order_no} 를 등록했습니다.`, orderNo: res.order_no, orderId: res.id };
 }

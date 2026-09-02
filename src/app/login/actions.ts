@@ -28,9 +28,9 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_active')
+    .select('is_active, role')
     .eq('id', data.user.id)
-    .maybeSingle<{ is_active: boolean }>();
+    .maybeSingle<{ is_active: boolean; role: 'hq_admin' | 'store_manager' }>();
 
   if (!profile) {
     await supabase.auth.signOut();
@@ -53,7 +53,8 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
   }
 
   revalidatePath('/', 'layout');
-  redirect(next.startsWith('/') ? next : '/dashboard');
+  const requested = next.startsWith('/') ? next : '/dashboard';
+  redirect(profile.role === 'store_manager' && requested === '/dashboard' ? '/store-dashboard' : requested);
 }
 
 export async function signOut() {

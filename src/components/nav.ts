@@ -17,6 +17,7 @@ export const NAV: NavGroup[] = [
     group: '운영',
     items: [
       { href: '/dashboard', ko: '대시보드', icon: 'M3 9.5L9 3l6 6.5V15H3z' },
+      { href: '/store-dashboard', ko: '지점 포털', icon: 'M2 7l2-4h10l2 4v8H2zM6 15v-4h6v4', hqOnly: true },
       { href: '/orders', ko: '발주 관리', icon: 'M4 2h10v14l-5-2.6L4 16z', badge: 'openOrders' },
       { href: '/shipping', ko: '출고 · 배차', icon: 'M1 4h9v7H1zM10 6.5h3.4L16 9v2h-6z', hqOnly: true },
     ],
@@ -52,6 +53,13 @@ export const NAV: NavGroup[] = [
 
 export function navFor(isHQ: boolean): NavGroup[] {
   return NAV
-    .map((g) => ({ ...g, items: g.items.filter((i) => isHQ || !i.hqOnly) }))
+    .map((g) => ({
+      ...g,
+      items: g.items
+        .filter((i) => isHQ || !i.hqOnly)
+        .map((i) => (!isHQ && i.href === '/dashboard'
+          ? { ...i, href: '/store-dashboard', ko: '매장 홈' }
+          : i)),
+    }))
     .filter((g) => g.items.length > 0);
 }

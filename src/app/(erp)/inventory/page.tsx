@@ -194,7 +194,7 @@ export default async function InventoryPage({
         <div className="toolbar">
           {session.isHQ && (
             <>
-              <StorePicker stores={stores} current={target.id} />
+              <StorePicker stores={stores} current={target.id} basePath="/inventory?view=store" />
               <a className="btn btn-sm" href="/inventory">물류센터 재고 보기</a>
             </>
           )}

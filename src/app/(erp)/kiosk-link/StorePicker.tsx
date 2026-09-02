@@ -3,10 +3,11 @@
 import { useRouter } from 'next/navigation';
 
 export default function StorePicker({
-  stores, current,
+  stores, current, basePath = '/kiosk-link',
 }: {
   stores: { id: string; code: string; name: string }[];
   current: string;
+  basePath?: string;
 }) {
   const router = useRouter();
   return (
@@ -17,7 +18,7 @@ export default function StorePicker({
         className="ctl"
         style={{ maxWidth: 200 }}
         value={current}
-        onChange={(e) => router.push(`/kiosk-link?store=${e.target.value}`)}
+        onChange={(e) => router.push(`${basePath}${basePath.includes('?') ? '&' : '?'}store=${e.target.value}`)}
       >
         {stores.map((s) => (
           <option key={s.id} value={s.id}>{s.code} · {s.name}</option>
