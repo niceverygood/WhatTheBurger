@@ -34,12 +34,45 @@ interface CheckoutErr {
 }
 
 const CATS = ['버거', '세트', '사이드', '음료'];
-const CATEGORY_IMAGE: Record<string, string> = {
-  버거: '/images/menu/signature-burger-v2.png',
-  세트: '/images/menu/burger-set-v2.png',
-  사이드: '/images/menu/crispy-fries-v2.png',
-  음료: '/images/menu/chilled-cola-v2.png',
+interface MenuMedia { image: string; description: string; tag?: 'BEST' | 'NEW' | 'HOT' }
+
+const MENU_MEDIA: Record<string, MenuMedia> = {
+  B1: { image: '/images/menu/wtb-whattheburger-v1.jpg', description: '육즙 가득 비프패티와 달콤한 특제소스', tag: 'BEST' },
+  B2: { image: '/images/menu/wtb-shuttheburger-v1.jpg', description: '두툼한 더블패티로 꽉 채운 시그니처 버거', tag: 'BEST' },
+  B3: { image: '/images/menu/wtb-signature-v1.jpg', description: '신선한 채소와 비프패티의 클래식 조합' },
+  B4: { image: '/images/menu/wtb-jimotmi-v1.jpg', description: '부드러운 스크램블에그가 폭탄처럼 듬뿍', tag: 'NEW' },
+  B5: { image: '/images/menu/wtb-grilled-shrimp-v1.jpg', description: '불향 가득 탱글한 통새우를 통째로', tag: 'BEST' },
+  B6: { image: '/images/menu/wtb-bulgogi-v1.jpg', description: '달콤짭짤한 불고기소스와 촉촉한 비프패티' },
+  B7: { image: '/images/menu/wtb-chicken-thigh-v1.jpg', description: '겉바속촉 통다리살 치킨을 그대로' },
+  B8: { image: '/images/menu/wtb-spicy-chicken-v1.jpg', description: '화끈한 불닭소스와 바삭한 통다리살', tag: 'HOT' },
+  B9: { image: '/images/menu/wtb-american-cheese-v1.jpg', description: '진한 체다치즈가 녹아든 아메리칸 스타일' },
+  B10: { image: '/images/menu/wtb-double-bacon-v1.jpg', description: '더블치즈와 바삭한 베이컨의 풍성한 맛' },
+  B11: { image: '/images/menu/wtb-shrimp-v1.jpg', description: '바삭하고 탱글한 통새우의 산뜻한 조합' },
+  B12: { image: '/images/menu/wtb-king-shrimp-beef-v1.jpg', description: '비프패티와 통새우를 한 번에 즐기는 킹 사이즈', tag: 'NEW' },
+  S1: { image: '/images/menu/wtb-fries-v1.jpg', description: '바삭하고 포슬포슬한 감자튀김' },
+  S2: { image: '/images/menu/wtb-cheese-stick-v1.jpg', description: '쭉 늘어나는 모짜렐라 치즈스틱' },
+  S3: { image: '/images/menu/wtb-coleslaw-v1.jpg', description: '아삭하고 상큼한 수제 코울슬로' },
+  S4: { image: '/images/menu/wtb-chicken-bites-v1.jpg', description: '한입에 즐기는 바삭한 치킨너겟' },
+  S5: { image: '/images/menu/wtb-chicken-bites-v1.jpg', description: '매콤한 특제소스를 더한 바삭 치킨', tag: 'HOT' },
+  D1: { image: '/images/menu/wtb-cola-v1.jpg', description: '톡 쏘는 시원한 콜라' },
+  D2: { image: '/images/menu/wtb-cola-v1.jpg', description: '칼로리 부담 없이 시원한 제로콜라' },
+  D3: { image: '/images/menu/wtb-cola-v1.jpg', description: '청량하고 깔끔한 사이다' },
+  D4: { image: '/images/menu/wtb-cola-v1.jpg', description: '향긋하고 깔끔한 아메리카노' },
 };
+
+const SET_MEDIA: MenuMedia = {
+  image: '/images/menu/wtb-set-v1.jpg',
+  description: '버거 + 감자튀김 + 시원한 음료',
+  tag: 'BEST',
+};
+
+function getMenuMedia(menu: KioskMenu): MenuMedia {
+  if (menu.category === '세트') return SET_MEDIA;
+  return MENU_MEDIA[menu.code] ?? {
+    image: '/images/menu/wtb-whattheburger-v1.jpg',
+    description: '주문 즉시 맛있게 준비해 드립니다',
+  };
+}
 
 export default function KioskTerminal({
   token, initial,
@@ -221,6 +254,7 @@ export default function KioskTerminal({
           <div className="kio-menu">
             {visible.map((m) => {
               const left = remainingOf(m);
+              const media = getMenuMedia(m);
               return (
                 <button
                   key={m.id}
@@ -231,15 +265,17 @@ export default function KioskTerminal({
                 >
                   <span className="kio-photo">
                     <Image
-                      src={CATEGORY_IMAGE[m.category] ?? CATEGORY_IMAGE.버거}
-                      alt=""
+                      src={media.image}
+                      alt={`${m.name} 제품 사진`}
                       fill
                       sizes="(max-width: 560px) 46vw, (max-width: 900px) 31vw, (max-width: 1180px) 25vw, 220px"
                       priority={m.sort < 4}
                     />
+                    {media.tag && <span className={`kio-product-tag tag-${media.tag.toLowerCase()}`}>{media.tag}</span>}
                     <span className="kio-photo-badge" aria-hidden="true">{m.emoji}</span>
                   </span>
                   <span className="nm">{m.name}</span>
+                  <span className="ds">{media.description}</span>
                   <span className="pr">{n0(m.price)}원</span>
                   {left <= 0 ? (
                     <span className="so">재료 소진 — 판매 불가</span>

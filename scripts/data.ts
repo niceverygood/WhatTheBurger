@@ -100,29 +100,37 @@ export interface MenuSeed {
 }
 
 export const BASE_MENUS: MenuSeed[] = [
-  { code: 'B1', category: '버거', emoji: '🍔', name: '왓더 시그니처', price: 6900, daily: 46, bom: [['PT-001', 1], ['BN-001', 1], ...SIG] },
-  { code: 'B2', category: '버거', emoji: '🍔', name: '더블 시그니처', price: 9800, daily: 28, bom: [['PT-002', 1], ['PT-001', 1], ['BN-001', 1], ['CH-001', 2], ['VG-001', 1], ['VG-003', 1], ['SC-001', 1], ['PK-001', 1]] },
-  { code: 'B3', category: '버거', emoji: '🍗', name: '크리스피 치킨', price: 6400, daily: 32, bom: [['PT-003', 1], ['BN-002', 1], ['VG-001', 1], ['VG-005', 1], ['SC-002', 1], ['PK-001', 1]] },
-  { code: 'B4', category: '버거', emoji: '🌶️', name: '스파이시 치킨', price: 6900, daily: 24, bom: [['PT-005', 1], ['BN-002', 1], ['VG-001', 1], ['VG-004', 1], ['SC-003', 1], ['PK-001', 1]] },
-  { code: 'B5', category: '버거', emoji: '🍤', name: '통새우 버거', price: 7900, daily: 18, bom: [['PT-004', 1], ['BN-001', 1], ['VG-001', 1], ['VG-002', 1], ['SC-002', 1], ['PK-001', 1]] },
-  { code: 'B6', category: '버거', emoji: '🥯', name: '흑미 프리미엄', price: 8900, daily: 14, bom: [['PT-002', 1], ['BN-003', 1], ['CH-001', 1], ['CH-003', 1], ['VG-001', 1], ['VG-002', 1], ['SC-001', 1], ['PK-001', 1]] },
-  { code: 'S1', category: '사이드', emoji: '🍟', name: '프렌치프라이', price: 2900, daily: 40, bom: [['SD-001', 1], ['PK-003', 1]] },
-  { code: 'S2', category: '사이드', emoji: '🥔', name: '웨지 포테이토', price: 3400, daily: 22, bom: [['SD-002', 1], ['PK-003', 1]] },
-  { code: 'S3', category: '사이드', emoji: '🧀', name: '모짜렐라 치즈스틱', price: 3900, daily: 26, bom: [['SD-003', 1], ['PK-003', 1]] },
-  { code: 'S4', category: '사이드', emoji: '🧅', name: '어니언링', price: 3400, daily: 20, bom: [['SD-004', 1], ['PK-003', 1]] },
-  { code: 'S5', category: '사이드', emoji: '🍗', name: '치킨 텐더', price: 4900, daily: 16, bom: [['SD-005', 1], ['PK-003', 1]] },
-  { code: 'D1', category: '음료', emoji: '🥤', name: '콜라', price: 2200, daily: 55, bom: [['BV-001', 1], ['PK-004', 1]] },
-  { code: 'D2', category: '음료', emoji: '🫧', name: '제로콜라', price: 2200, daily: 35, bom: [['BV-003', 1], ['PK-004', 1]] },
-  { code: 'D3', category: '음료', emoji: '🥤', name: '사이다', price: 2200, daily: 28, bom: [['BV-002', 1], ['PK-004', 1]] },
-  { code: 'D4', category: '음료', emoji: '☕', name: '아메리카노', price: 2500, daily: 45, bom: [['BV-004', 1], ['PK-004', 1]] },
+  { code: 'B1', category: '버거', emoji: '🍔', name: '왓더버거', price: 7700, daily: 46, bom: [['PT-001', 1], ['BN-001', 1], ...SIG] },
+  { code: 'B2', category: '버거', emoji: '🥩', name: '셧더버거', price: 8400, daily: 28, bom: [['PT-001', 2], ['BN-001', 1], ['CH-001', 2], ['VG-001', 1], ['VG-002', 1], ['VG-003', 1], ['VG-005', 1], ['SC-001', 1], ['PK-001', 1]] },
+  { code: 'B3', category: '버거', emoji: '⭐', name: '시그니처버거', price: 7000, daily: 42, bom: [['PT-001', 1], ['BN-001', 1], ...SIG] },
+  { code: 'B4', category: '버거', emoji: '🍳', name: '스크램블에그 폭탄 지못미버거', price: 8800, daily: 24, bom: [['PT-001', 1], ['BN-001', 1], ['CH-001', 2], ['CH-003', 1], ['VG-001', 1], ['VG-002', 1], ['VG-003', 1], ['SC-002', 1], ['PK-001', 1]] },
+  { code: 'B5', category: '버거', emoji: '🦐', name: '직화 통새우버거', price: 8500, daily: 22, bom: [['PT-004', 1], ['BN-001', 1], ['VG-001', 1], ['VG-002', 1], ['VG-003', 1], ['SC-002', 1], ['PK-001', 1]] },
+  { code: 'B6', category: '버거', emoji: '🥩', name: '리얼불고기버거', price: 6300, daily: 28, bom: [['PT-001', 1], ['BN-002', 1], ['CH-001', 1], ['VG-001', 1], ['VG-002', 1], ['VG-003', 1], ['SC-001', 1], ['PK-001', 1]] },
+  { code: 'B7', category: '버거', emoji: '🍗', name: '통다리살치킨버거', price: 7000, daily: 32, bom: [['PT-003', 1], ['BN-002', 1], ['VG-001', 1], ['VG-002', 1], ['VG-005', 1], ['SC-002', 1], ['PK-001', 1]] },
+  { code: 'B8', category: '버거', emoji: '🌶️', name: '슈퍼불닭버거', price: 7400, daily: 24, bom: [['PT-005', 1], ['BN-002', 1], ['VG-001', 1], ['VG-002', 1], ['VG-004', 1], ['SC-003', 1], ['PK-001', 1]] },
+  { code: 'B9', category: '버거', emoji: '🧀', name: '아메리칸 치즈버거', price: 6200, daily: 34, bom: [['PT-001', 1], ['BN-002', 1], ['CH-001', 2], ['VG-003', 1], ['VG-005', 1], ['SC-001', 1], ['PK-001', 1]] },
+  { code: 'B10', category: '버거', emoji: '🥓', name: '더블치즈 베이컨버거', price: 7300, daily: 25, bom: [['PT-002', 1], ['BN-002', 1], ['CH-001', 2], ['CH-003', 1], ['VG-003', 1], ['VG-005', 1], ['SC-001', 1], ['PK-001', 1]] },
+  { code: 'B11', category: '버거', emoji: '🍤', name: '통새버거', price: 5900, daily: 22, bom: [['PT-004', 1], ['BN-002', 1], ['VG-001', 1], ['VG-002', 1], ['VG-003', 1], ['SC-002', 1], ['PK-001', 1]] },
+  { code: 'B12', category: '버거', emoji: '👑', name: '킹새우비프버거', price: 8500, daily: 18, bom: [['PT-001', 1], ['PT-004', 1], ['BN-001', 1], ['CH-001', 1], ['VG-001', 1], ['VG-002', 1], ['VG-003', 1], ['SC-002', 1], ['PK-001', 1]] },
+  { code: 'S1', category: '사이드', emoji: '🍟', name: '감자튀김', price: 2900, daily: 40, bom: [['SD-001', 1], ['PK-003', 1]] },
+  { code: 'S2', category: '사이드', emoji: '🧀', name: '빅자이언트 치즈스틱', price: 4900, daily: 22, bom: [['SD-003', 2], ['PK-003', 1]] },
+  { code: 'S3', category: '사이드', emoji: '🥗', name: '코울슬로', price: 2800, daily: 26, bom: [['VG-001', 1], ['VG-004', 1], ['SC-002', 1], ['PK-003', 1]] },
+  { code: 'S4', category: '사이드', emoji: '🍗', name: '치킨너겟', price: 3100, daily: 20, bom: [['SD-005', 1], ['PK-003', 1]] },
+  { code: 'S5', category: '사이드', emoji: '🔥', name: '왓더프라이', price: 4900, daily: 16, bom: [['SD-005', 1], ['SC-003', 1], ['PK-003', 1]] },
+  { code: 'D1', category: '음료', emoji: '🥤', name: '콜라', price: 2500, daily: 55, bom: [['BV-001', 1], ['PK-004', 1]] },
+  { code: 'D2', category: '음료', emoji: '🫧', name: '제로콜라', price: 2500, daily: 35, bom: [['BV-003', 1], ['PK-004', 1]] },
+  { code: 'D3', category: '음료', emoji: '🥤', name: '사이다', price: 2500, daily: 28, bom: [['BV-002', 1], ['PK-004', 1]] },
+  { code: 'D4', category: '음료', emoji: '☕', name: '아메리카노', price: 3000, daily: 45, bom: [['BV-004', 1], ['PK-004', 1]] },
 ];
 
-/** 세트 = 버거 + 프렌치프라이 + 콜라, 700원 할인 */
+const SET_PRICES = [11200, 11900, 10500, 12300, 12300, 9800, 10500, 10900, 9700, 10800, 9400, 12000];
+const SET_DAILY = [52, 30, 44, 22, 18, 28, 34, 22, 30, 22, 18, 14];
+
+/** 실제 매장 기본 세트 = 버거 + 감자튀김 + 콜라 */
 export function buildMenus(): MenuSeed[] {
   const menus = [...BASE_MENUS];
   const fry = BASE_MENUS.find((m) => m.code === 'S1')!;
   const cola = BASE_MENUS.find((m) => m.code === 'D1')!;
-  const setDaily = [52, 30, 34, 22, 16, 12];
 
   BASE_MENUS.filter((m) => m.category === '버거').forEach((m, i) => {
     menus.push({
@@ -130,8 +138,8 @@ export function buildMenus(): MenuSeed[] {
       category: '세트',
       emoji: m.emoji,
       name: `${m.name} 세트`,
-      price: m.price + fry.price + cola.price - 700,
-      daily: setDaily[i],
+      price: SET_PRICES[i] ?? m.price + fry.price + cola.price - 700,
+      daily: SET_DAILY[i] ?? 12,
       bom: [...m.bom, ...fry.bom, ...cola.bom, ['PK-002', 1]],
     });
   });
