@@ -205,7 +205,7 @@ export default async function StoreDashboardPage({
           <Card title="잘 팔리는 메뉴" sub="최근 7일 판매수량">
             <div style={{ padding: '10px 9px 12px' }}>
               {ranking.length > 0
-                ? <BarChart rows={ranking} label="메뉴별 판매 순위" labelW={130} fmt={(value) => `${n0(value)}개`} />
+                ? <BarChart rows={ranking} label="메뉴별 판매 순위" labelW={130} unit="개" />
                 : <Empty>아직 판매 데이터가 없습니다.</Empty>}
             </div>
           </Card>

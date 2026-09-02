@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { wonC } from '@/lib/format';
+import { n0, wonC } from '@/lib/format';
 
 export interface Point { k: string; full?: string; v: number; sub?: string }
 export interface BarRow { k: string; v: number; sub?: string }
@@ -121,10 +121,11 @@ export function AreaChart({
 
 /* ---------------------------------------------------------------- 가로 막대 */
 export function BarChart({
-  rows, fmt = wonC, labelW = 96, label = '',
+  rows, fmt = wonC, unit, labelW = 96, label = '',
 }: {
   rows: BarRow[];
   fmt?: (n: number) => string;
+  unit?: string;
   labelW?: number;
   label?: string;
 }) {
@@ -138,6 +139,7 @@ export function BarChart({
   const H = rows.length * band + 6;
   const max = Math.max(...rows.map((r) => r.v)) || 1;
   const iw = W - pl - pr;
+  const valueText = (value: number) => unit ? `${n0(value)}${unit}` : fmt(value);
 
   return (
     <div className="chart-wrap">
@@ -157,7 +159,7 @@ export function BarChart({
               </text>
               <text x={pl + w + 8} y={y + thick / 2 + 4} fill="#16130F" fontSize={11.5} fontWeight={650}
                     style={{ fontVariantNumeric: 'tabular-nums' }}>
-                {fmt(r.v)}
+                {valueText(r.v)}
               </text>
               {r.sub && (
                 <text x={W - 4} y={y + thick / 2 + 4} textAnchor="end" fill="#A79E93" fontSize={10.5}>
