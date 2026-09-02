@@ -666,20 +666,21 @@ textarea.inp{resize:vertical;min-height:64px;line-height:1.55}
 }
 
 @media(max-width:760px){
-  .app-store{grid-template-columns:1fr;height:100dvh}
-  .app-store .side{height:auto;display:block;overflow:hidden}
-  .app-store .brand,.app-store .nav-group,.app-store .side-foot{display:none}
-  .app-store .nav{display:flex;align-items:center;gap:4px;overflow-x:auto;padding:7px 8px}
-  .app-store .nav>div{display:contents}
-  .app-store .nav-item{width:auto;flex:none;white-space:nowrap;padding:8px 10px;font-size:12px}
-  .app-store .nav-badge{margin-left:2px}
-  .app-store .main{min-width:0}
-  .app-store .topbar{padding:11px 14px}
-  .app-store .topbar-right{width:100%;margin-left:0;gap:7px}
-  .app-store .topbar-right .clock{display:none}
-  .app-store .title{font-size:17px}
-  .app-store .title-sub{max-width:330px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .app-store .view{padding:14px 12px 40px}
+  .app-store,.app:has(.store-dashboard){grid-template-columns:1fr;height:100dvh}
+  .app-store .side,.app:has(.store-dashboard) .side{height:auto;display:block;overflow:hidden}
+  .app-store .brand,.app-store .nav-group,.app-store .side-foot,
+  .app:has(.store-dashboard) .brand,.app:has(.store-dashboard) .nav-group,.app:has(.store-dashboard) .side-foot{display:none}
+  .app-store .nav,.app:has(.store-dashboard) .nav{display:flex;align-items:center;gap:4px;overflow-x:auto;padding:7px 8px}
+  .app-store .nav>div,.app:has(.store-dashboard) .nav>div{display:contents}
+  .app-store .nav-item,.app:has(.store-dashboard) .nav-item{width:auto;flex:none;white-space:nowrap;padding:8px 10px;font-size:12px}
+  .app-store .nav-badge,.app:has(.store-dashboard) .nav-badge{margin-left:2px}
+  .app-store .main,.app:has(.store-dashboard) .main{min-width:0}
+  .app-store .topbar,.app:has(.store-dashboard) .topbar{padding:11px 14px}
+  .app-store .topbar-right,.app:has(.store-dashboard) .topbar-right{width:100%;margin-left:0;gap:7px}
+  .app-store .topbar-right .clock,.app:has(.store-dashboard) .topbar-right .clock{display:none}
+  .app-store .title,.app:has(.store-dashboard) .title{font-size:17px}
+  .app-store .title-sub,.app:has(.store-dashboard) .title-sub{max-width:330px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .app-store .view,.app:has(.store-dashboard) .view{padding:14px 12px 40px}
   .store-hero{grid-template-columns:1fr;padding:20px;gap:18px}
   .store-hero h2{font-size:22px}
   .store-hero-status{grid-template-columns:1fr 1fr}
