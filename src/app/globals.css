@@ -676,8 +676,15 @@ textarea.inp{resize:vertical;min-height:64px;line-height:1.55}
   .app-store .nav-badge,.app:has(.store-dashboard) .nav-badge{margin-left:2px}
   .app-store .main,.app:has(.store-dashboard) .main{min-width:0}
   .app-store .topbar,.app:has(.store-dashboard) .topbar{padding:11px 14px}
-  .app-store .topbar-right,.app:has(.store-dashboard) .topbar-right{width:100%;margin-left:0;gap:7px}
+  .app-store .topbar-right,.app:has(.store-dashboard) .topbar-right{width:100%;margin-left:0;gap:8px;justify-content:flex-end}
   .app-store .topbar-right .clock,.app:has(.store-dashboard) .topbar-right .clock{display:none}
+  .app-store .topbar-right .role-tag,.app-store .topbar-right .avatar,
+  .app:has(.store-dashboard) .topbar-right .role-tag,.app:has(.store-dashboard) .topbar-right .avatar{display:none}
+  .app-store .topbar-right>.field,.app:has(.store-dashboard) .topbar-right>.field{flex:1;min-width:0}
+  .app-store .topbar-right>.field label,.app:has(.store-dashboard) .topbar-right>.field label{flex:none}
+  .app-store .topbar-right>.field select,.app:has(.store-dashboard) .topbar-right>.field select{width:100%;max-width:none!important;min-width:0}
+  .app-store .topbar-right form,.app:has(.store-dashboard) .topbar-right form{flex:none}
+  .app-store .topbar-right form .btn,.app:has(.store-dashboard) .topbar-right form .btn{white-space:nowrap}
   .app-store .title,.app:has(.store-dashboard) .title{font-size:17px}
   .app-store .title-sub,.app:has(.store-dashboard) .title-sub{max-width:330px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .app-store .view,.app:has(.store-dashboard) .view{padding:14px 12px 40px}
